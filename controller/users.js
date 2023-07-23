@@ -1,5 +1,4 @@
 const User = require('../models/user');
-const MESSAGE = 'Something went off';
 
 /**
  * get all the users list
@@ -29,8 +28,8 @@ exports.post = function (req, res, next) {
         suite: req.body.address.suite,
         city: req.body.address.city,
         zipcode: req.body.address.zipcode,
-        lat: req.body.address.lat,
-        lng: req.body.address.lng,
+        lat: req.body.address.geo.lat,
+        lng: req.body.address.geo.lng,
         phone: req.body.phone,
         website: req.body.website,
         company_name: req.body.company.name,
@@ -42,12 +41,8 @@ exports.post = function (req, res, next) {
     const user = new User(payload);
     user.save(function (err, usr) {
         if (err) {
-            let message = MESSAGE;
-            if(err.keyValue){
-                message = `${JSON.stringify(err.keyValue)} already exist`;
-            }
             return res.send(
-                { success: false, data: '', error:message  }
+                { success: false, data: '', error:err  }
             )
         };
 
@@ -68,7 +63,7 @@ exports.getById = function get(req, res, next) {
             return res.send({ success: true, user });
         }
         else {
-            return res.send({ success: false });
+            return res.send({ success: false, error:err });
         }
     });
 };
@@ -89,12 +84,8 @@ exports.updateById = async function put(req, res, next) {
         });
         return res.send({ success: true, user });
     }catch(err){
-        let message = MESSAGE;
-        if(err.keyValue){
-            message = `${JSON.stringify(err.keyValue)} already exist`;
-        }
         return res.send(
-            { success: false, data: '', error:message  }
+            { success: false, data: '', error:err  }
         )
     }
   
